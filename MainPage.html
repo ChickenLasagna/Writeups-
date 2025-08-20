@@ -121,7 +121,7 @@
 
     <button class="dark-mode-btn" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">
     Toggle Dark Mode
-</button>
+    </button>
 
     <div class="container mt-5">
         <h2>Hacking Challenges - Writeups</h2>
@@ -139,21 +139,15 @@
         <div class="filter-section">
             <select id="platformFilter" class="form-select filter-select" onchange="filterWriteups()">
                 <option value="">Platform</option>
-                <option value="HTB">HTB</option>
-                <option value="CTF">CTF</option>
-                <option value="VulnHub">VulnHub</option>
+                <!-- Options will be dynamically added -->
             </select>
             <select id="categoryFilter" class="form-select filter-select" onchange="filterWriteups()">
                 <option value="">Category</option>
-                <option value="Web">Web</option>
-                <option value="OSINT">OSINT</option>
-                <option value="Cryptography">Cryptography</option>
+                <!-- Options will be dynamically added -->
             </select>
             <select id="difficultyFilter" class="form-select filter-select" onchange="filterWriteups()">
                 <option value="">Difficulty</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
+                <!-- Options will be dynamically added -->
             </select>
         </div>
 
@@ -189,10 +183,10 @@
                 <tr data-platform="HTB" data-category="Web" data-difficulty="Medium">
                     <td>1</td>
                     <td><a href="https://chickenlasagna.github.io/Writeups-/MainPage.html" class="writeup-link">Test</a></td>
-                    <td>Test</td>
-                    <td>Test</td>
-                    <td>Test</td>
-                    <td>Test</td>
+                    <td>HTB</td>
+                    <td>Web</td>
+                    <td>Python</td>
+                    <td>Linux</td>
                     <td>Medium</td>
                     <td>Completed</td>
                     <td>Test, Test</td>
@@ -202,11 +196,11 @@
                             <a href="https://www.cloudflare.com/en-gb/learning/security/what-is-remote-code-execution/" target="_blank">What is RCE?</a>
                         </div>
                     </td>
-                    <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='https://chickenlasagna.github.io/Writeups-/test.html'">View</button></td>
+                    <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='test.html'">View</button></td>
                 </tr>
                 <tr data-platform="CTF" data-category="Cryptography" data-difficulty="Hard">
                     <td>2</td>
-                    <td><a href="writeup2.html" class="writeup-link">Writeup 2</a></td>
+                    <td><a href="test.html" class="writeup-link">Writeup 2</a></td>
                     <td>CTF</td>
                     <td>Cryptography</td>
                     <td>C</td>
@@ -220,7 +214,7 @@
                             <a href="https://example4.com" target="_blank">Reference 2</a>
                         </div>
                     </td>
-                    <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='writeup2.html'">View</button></td>
+                    <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='test.html'">View</button></td>
                 </tr>
                 <!-- Add more writeup rows as needed -->
             </tbody>
@@ -229,6 +223,35 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Function to update filter options dynamically
+        function updateFilters() {
+            const platforms = new Set();
+            const categories = new Set();
+            const difficulties = new Set();
+
+            const rows = document.querySelectorAll('#writeupTableBody tr');
+
+            rows.forEach(row => {
+                platforms.add(row.getAttribute('data-platform'));
+                categories.add(row.getAttribute('data-category'));
+                difficulties.add(row.getAttribute('data-difficulty'));
+            });
+
+            updateFilterOptions('platformFilter', platforms);
+            updateFilterOptions('categoryFilter', categories);
+            updateFilterOptions('difficultyFilter', difficulties);
+        }
+
+        function updateFilterOptions(filterId, items) {
+            const filter = document.getElementById(filterId);
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = `${item}`;
+                filter.appendChild(option);
+            });
+        }
+
         function filterWriteups() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
             const platformFilter = document.getElementById('platformFilter').value.toLowerCase();
@@ -263,12 +286,12 @@
         }
 
         function addWriteup() {
-            // You would typically upload your writeup to GitHub and update this page manually.
             alert("To add a writeup, please update the HTML manually or use GitHub to edit the content.");
         }
+
+        // Initialize the filter on page load
+        window.onload = updateFilters;
     </script>
 </body>
 
 </html>
-
-
