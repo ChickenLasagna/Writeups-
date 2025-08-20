@@ -120,19 +120,20 @@
     </div>
 
     <button class="dark-mode-btn" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">
-    Toggle Dark Mode
+        Toggle Dark Mode
     </button>
 
     <div class="container mt-5">
         <h2>Hacking Challenges - Writeups</h2>
 
-        <div class="mb-3">
-            <a href="#" class="btn btn-primary">Home</a>
+        <!-- About Section -->
+        <div class="alert alert-info" role="alert">
+            <strong>ChickenLasagna's Blog:</strong> Writeup repository featuring hacking challenges, labs, and CTF Challenges.
         </div>
 
         <!-- Search Bar -->
         <div class="mb-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search writeups...">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search writeups..." oninput="filterWriteups()">
         </div>
 
         <!-- Filters Section -->
@@ -149,16 +150,23 @@
                 <option value="">Difficulty</option>
                 <!-- Options will be dynamically added -->
             </select>
+            <select id="languageFilter" class="form-select filter-select" onchange="filterWriteups()">
+                <option value="">Language</option>
+                <!-- Options will be dynamically added -->
+            </select>
+            <select id="osFilter" class="form-select filter-select" onchange="filterWriteups()">
+                <option value="">OS</option>
+                <!-- Options will be dynamically added -->
+            </select>
+            <select id="statusFilter" class="form-select filter-select" onchange="filterWriteups()">
+                <option value="">Status</option>
+                <!-- Options will be dynamically added -->
+            </select>
         </div>
 
-        <!-- Add New Writeup Button (For Admin Use Only) -->
+        <!-- Clear Filters Button -->
         <div class="mb-3">
-            <button class="btn btn-success" onclick="addWriteup()">Add Writeup</button>
-        </div>
-
-        <!-- About Section (Blank for now) -->
-        <div class="alert alert-info" role="alert">
-            <strong>ChickenLasagna's Blog:</strong> Writeup repository featuring hacking challenges, labs and CTF Challenges
+            <button class="btn btn-warning" onclick="clearFilters()">Clear Filters</button>
         </div>
 
         <!-- Writeup Table -->
@@ -174,13 +182,13 @@
                     <th>Difficulty</th>
                     <th>Status</th>
                     <th>Tags</th>
-                    <th>Resources</th> <!-- Added resources column -->
+                    <th>Resources</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="writeupTableBody">
                 <!-- Writeups will be dynamically inserted here -->
-                <tr data-platform="HTB" data-category="Web" data-difficulty="Medium">
+                <tr data-platform="HTB" data-category="Web" data-difficulty="Medium" data-language="Python" data-os="Linux" data-status="Completed">
                     <td>1</td>
                     <td><a href="https://chickenlasagna.github.io/Writeups-/MainPage.html" class="writeup-link">Test</a></td>
                     <td>HTB</td>
@@ -196,9 +204,9 @@
                             <a href="https://www.cloudflare.com/en-gb/learning/security/what-is-remote-code-execution/" target="_blank">What is RCE?</a>
                         </div>
                     </td>
-                    <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='test.html'">View</button></td>
+                    <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='https://chickenlasagna.github.io/Writeups-/test.html'">View</button></td>
                 </tr>
-                <tr data-platform="CTF" data-category="Cryptography" data-difficulty="Hard">
+                <tr data-platform="CTF" data-category="Cryptography" data-difficulty="Hard" data-language="C" data-os="Windows" data-status="In Progress">
                     <td>2</td>
                     <td><a href="test.html" class="writeup-link">Writeup 2</a></td>
                     <td>CTF</td>
@@ -216,47 +224,92 @@
                     </td>
                     <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='test.html'">View</button></td>
                 </tr>
-                <!-- Add more writeup rows as needed -->
             </tbody>
         </table>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Function to update filter options dynamically
-        function updateFilters() {
-            const platforms = new Set();
-            const categories = new Set();
-            const difficulties = new Set();
+        // Global variables to track unique filter options and their counts
+        let filterData = {
+            platform: {},
+            category: {},
+            difficulty: {},
+            language: {},
+            os: {},
+            status: {}
+        };
 
+        // Function to toggle Dark Mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Update filters with unique values dynamically
+        function updateFilters() {
             const rows = document.querySelectorAll('#writeupTableBody tr');
 
+            // Reset filter data
+            filterData = {
+                platform: {},
+                category: {},
+                difficulty: {},
+                language: {},
+                os: {},
+                status: {}
+            };
+
+            // Collect unique values and counts for each filter
             rows.forEach(row => {
-                platforms.add(row.getAttribute('data-platform'));
-                categories.add(row.getAttribute('data-category'));
-                difficulties.add(row.getAttribute('data-difficulty'));
+                const platform = row.getAttribute('data-platform');
+                const category = row.getAttribute('data-category');
+                const difficulty = row.getAttribute('data-difficulty');
+                const language = row.getAttribute('data-language');
+                const os = row.getAttribute('data-os');
+                const status = row.getAttribute('data-status');
+
+                filterData.platform[platform] = (filterData.platform[platform] || 0) + 1;
+                filterData.category[category] = (filterData.category[category] || 0) + 1;
+                filterData.difficulty[difficulty] = (filterData.difficulty[difficulty] || 0) + 1;
+                filterData.language[language] = (filterData.language[language] || 0) + 1;
+                filterData.os[os] = (filterData.os[os] || 0) + 1;
+                filterData.status[status] = (filterData.status[status] || 0) + 1;
             });
 
-            updateFilterOptions('platformFilter', platforms);
-            updateFilterOptions('categoryFilter', categories);
-            updateFilterOptions('difficultyFilter', difficulties);
+            // Update the filters with dynamic values and counts
+            updateFilterOptions('platformFilter', filterData.platform);
+            updateFilterOptions('categoryFilter', filterData.category);
+            updateFilterOptions('difficultyFilter', filterData.difficulty);
+            updateFilterOptions('languageFilter', filterData.language);
+            updateFilterOptions('osFilter', filterData.os);
+            updateFilterOptions('statusFilter', filterData.status);
         }
 
+        // Update each filter with unique options and counters
         function updateFilterOptions(filterId, items) {
             const filter = document.getElementById(filterId);
-            items.forEach(item => {
+            const placeholder = filter.querySelector('option');
+            filter.innerHTML = '';  // Clear current options
+
+            filter.appendChild(placeholder);  // Re-add the placeholder text
+
+            for (const [key, value] of Object.entries(items)) {
                 const option = document.createElement('option');
-                option.value = item;
-                option.textContent = `${item}`;
+                option.value = key;
+                option.textContent = `${key} (${value})`;
                 filter.appendChild(option);
-            });
+            }
         }
 
+        // Function to filter the table
         function filterWriteups() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
             const platformFilter = document.getElementById('platformFilter').value.toLowerCase();
             const categoryFilter = document.getElementById('categoryFilter').value.toLowerCase();
             const difficultyFilter = document.getElementById('difficultyFilter').value.toLowerCase();
+            const languageFilter = document.getElementById('languageFilter').value.toLowerCase();
+            const osFilter = document.getElementById('osFilter').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
 
             const rows = document.querySelectorAll('#writeupTableBody tr');
 
@@ -265,13 +318,19 @@
                 const platform = row.getAttribute('data-platform').toLowerCase();
                 const category = row.getAttribute('data-category').toLowerCase();
                 const difficulty = row.getAttribute('data-difficulty').toLowerCase();
+                const language = row.getAttribute('data-language').toLowerCase();
+                const os = row.getAttribute('data-os').toLowerCase();
+                const status = row.getAttribute('data-status').toLowerCase();
 
                 const matchesSearch = name.includes(searchInput);
                 const matchesPlatform = platform.includes(platformFilter);
                 const matchesCategory = category.includes(categoryFilter);
                 const matchesDifficulty = difficulty.includes(difficultyFilter);
+                const matchesLanguage = language.includes(languageFilter);
+                const matchesOs = os.includes(osFilter);
+                const matchesStatus = status.includes(statusFilter);
 
-                if (matchesSearch && matchesPlatform && matchesCategory && matchesDifficulty) {
+                if (matchesSearch && matchesPlatform && matchesCategory && matchesDifficulty && matchesLanguage && matchesOs && matchesStatus) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
@@ -279,19 +338,24 @@
             });
         }
 
-        document.getElementById('searchInput').addEventListener('input', filterWriteups);
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
-
-        function addWriteup() {
-            alert("To add a writeup, please update the HTML manually or use GitHub to edit the content.");
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('platformFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('difficultyFilter').value = '';
+            document.getElementById('languageFilter').value = '';
+            document.getElementById('osFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            filterWriteups();
         }
 
         // Initialize the filter on page load
-        window.onload = updateFilters;
+        window.onload = function () {
+            updateFilters();
+        }
     </script>
 </body>
 
 </html>
+
