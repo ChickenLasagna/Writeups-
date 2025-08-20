@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacking Challenges - Writeups</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        /* Table styling for dark mode */
+        body.dark-mode .writeup-table,
+        body.dark-mode .writeup-table th,
+        body.dark-mode .writeup-table td {
+            background-color: #2c2c2c;
+            color: #ffffff;
+        }
+
+        body.dark-mode .writeup-table th {
+            background-color: #333;
+            color: #ffffff;
+        }
+
+        body.dark-mode .writeup-table td {
+            background-color: #444;
+            color: #ffffff;
+        }
+
+        body.dark-mode .writeup-table tbody tr:hover {
+            background-color: #555;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .writeup-table th,
+        .writeup-table td {
+            text-align: center;
+        }
+
+        .writeup-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .writeup-table .btn-view {
+            width: 100%;
+        }
+
+        .filter-select {
+            width: auto;
+            display: inline-block;
+        }
+
+        .writeup-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Button styles in dark mode */
+        body.dark-mode .btn-view {
+            background-color: #444;
+            color: #ffffff;
+        }
+
+        body.dark-mode .btn-view:hover {
+            background-color: #555;
+        }
+
+        .dark-mode-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .dark-mode-btn:hover {
+            background-color: #444;
+        }
+
+        /* Link color in dark mode */
+        body.dark-mode .writeup-link {
+            color: #ffffff;
+        }
+
+        body.dark-mode .writeup-link:hover {
+            color: #b0b0b0;
+        }
+
+        /* Resources Section Styling */
+        .resources {
+            margin-top: 10px;
+        }
+
+        .alert-info {
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Coming Soon Banner -->
+    <div class="alert alert-info" role="alert">
+        New writeups are coming soon! Stay tuned.
+    </div>
+
+    <button class="dark-mode-btn" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">
+    Toggle Dark Mode
+</button>
+
+    <div class="container mt-5">
+        <h2>Hacking Challenges - Writeups</h2>
+
+        <div class="mb-3">
+            <a href="#" class="btn btn-primary">Home</a>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search writeups...">
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filter-section">
+            <select id="platformFilter" class="form-select filter-select" onchange="filterWriteups()">
+                <option value="">Platform</option>
+                <option value="HTB">HTB</option>
+                <option value="CTF">CTF</option>
+                <option value="VulnHub">VulnHub</option>
+            </select>
+            <select id="categoryFilter" class="form-select filter-select" onchange="filterWriteups()">
+                <option value="">Category</option>
+                <option value="Web">Web</option>
+                <option value="OSINT">OSINT</option>
+                <option value="Cryptography">Cryptography</option>
+            </select>
+            <select id="difficultyFilter" class="form-select filter-select" onchange="filterWriteups()">
+                <option value="">Difficulty</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+            </select>
+        </div>
+
+        <!-- Add New Writeup Button (For Admin Use Only) -->
+        <div class="mb-3">
+            <button class="btn btn-success" onclick="addWriteup()">Add Writeup</button>
+        </div>
+
+        <!-- About Section (Blank for now) -->
+        <div class="alert alert-info" role="alert">
+            <strong>ChickenLasagna's Blog:</strong> Writeup repository featuring hacking challenges, labs and CTF Challenges
+        </div>
+
+        <!-- Writeup Table -->
+        <table class="table table-bordered writeup-table">
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Name</th>
+                    <th>Platform</th>
+                    <th>Category</th>
+                    <th>Language</th>
+                    <th>OS</th>
+                    <th>Difficulty</th>
+                    <th>Status</th>
+                    <th>Tags</th>
+                    <th>Resources</th> <!-- Added resources column -->
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="writeupTableBody">
+                <!-- Writeups will be dynamically inserted here -->
+                <tr data-platform="HTB" data-category="Web" data-difficulty="Medium">
+                    <td>1</td>
+                    <td><a href="writeup1.html" class="writeup-link">Writeup 1</a></td>
+                    <td>HTB</td>
+                    <td>Web</td>
+                    <td>Python</td>
+                    <td>Linux</td>
+                    <td>Medium</td>
+                    <td>Completed</td>
+                    <td>Tag1, Tag2</td>
+                    <td>
+                        <div class="resources">
+                            <a href="https://example.com" target="_blank">Reference 1</a><br>
+                            <a href="https://example2.com" target="_blank">Reference 2</a>
+                        </div>
+                    </td>
+                    <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='writeup1.html'">View</button></td>
+                </tr>
+                <tr data-platform="CTF" data-category="Cryptography" data-difficulty="Hard">
+                    <td>2</td>
+                    <td><a href="writeup2.html" class="writeup-link">Writeup 2</a></td>
+                    <td>CTF</td>
+                    <td>Cryptography</td>
+                    <td>C</td>
+                    <td>Windows</td>
+                    <td>Hard</td>
+                    <td>In Progress</td>
+                    <td>Tag3, Tag4</td>
+                    <td>
+                        <div class="resources">
+                            <a href="https://example3.com" target="_blank">Reference 1</a><br>
+                            <a href="https://example4.com" target="_blank">Reference 2</a>
+                        </div>
+                    </td>
+                    <td><button class="btn btn-primary btn-sm btn-view" onclick="window.location.href='writeup2.html'">View</button></td>
+                </tr>
+                <!-- Add more writeup rows as needed -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function filterWriteups() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const platformFilter = document.getElementById('platformFilter').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value.toLowerCase();
+            const difficultyFilter = document.getElementById('difficultyFilter').value.toLowerCase();
+
+            const rows = document.querySelectorAll('#writeupTableBody tr');
+
+            rows.forEach(row => {
+                const name = row.querySelector('td:nth-child(2) a').textContent.toLowerCase();
+                const platform = row.getAttribute('data-platform').toLowerCase();
+                const category = row.getAttribute('data-category').toLowerCase();
+                const difficulty = row.getAttribute('data-difficulty').toLowerCase();
+
+                const matchesSearch = name.includes(searchInput);
+                const matchesPlatform = platform.includes(platformFilter);
+                const matchesCategory = category.includes(categoryFilter);
+                const matchesDifficulty = difficulty.includes(difficultyFilter);
+
+                if (matchesSearch && matchesPlatform && matchesCategory && matchesDifficulty) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterWriteups);
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        function addWriteup() {
+            // You would typically upload your writeup to GitHub and update this page manually.
+            alert("To add a writeup, please update the HTML manually or use GitHub to edit the content.");
+        }
+    </script>
+</body>
+
+</html>
