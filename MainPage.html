@@ -12,23 +12,13 @@
             --fg: #000000;
             --bg-2: #f8f9fa;
         }
-        body {
-            background-color: var(--bg);
-            color: var(--fg);
-            transition: background-color 0.3s, color 0.3s;
-        }
-        body.dark-mode {
-            --bg: #121212;
-            --fg: #ffffff;
-            --bg-2: #1e1e1e;
-        }
+        body { background-color: var(--bg); color: var(--fg); transition: background-color 0.3s, color 0.3s; }
+        body.dark-mode { --bg: #121212; --fg: #ffffff; --bg-2: #1e1e1e; }
+
         /* Table styling for dark mode */
         body.dark-mode .writeup-table,
         body.dark-mode .writeup-table th,
-        body.dark-mode .writeup-table td {
-            background-color: #2c2c2c;
-            color: #ffffff;
-        }
+        body.dark-mode .writeup-table td { background-color: #2c2c2c; color: #ffffff; }
         body.dark-mode .writeup-table th { background-color: #333; }
         body.dark-mode .writeup-table td { background-color: #444; }
         body.dark-mode .writeup-table tbody tr:hover { background-color: #555; }
@@ -47,19 +37,21 @@
         body.dark-mode .writeup-link { color: #fff; }
         body.dark-mode .writeup-link:hover { color: #b0b0b0; }
 
-        /* Better mobile spacing */
+        /* Controls */
         .controls { position: sticky; top: 0; z-index: 1030; background: var(--bg); padding: 8px 0; }
+
+        /* Dark Mode Button - Top Right */
         .dark-mode-btn {
-            position: fixed;
-            right: 16px;
-            bottom: 16px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
             background: #333;
             color: #fff;
             border: none;
-            padding: 10px 12px;
+            padding: 10px 14px;
             border-radius: 999px;
             cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0,0,0,.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,.2);
             z-index: 1040;
         }
         .dark-mode-btn:hover { background-color: #444; }
@@ -70,12 +62,8 @@
         @media (min-width: 768px) { .filters-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 
         /* Cut visual clutter on very small screens */
-        @media (max-width: 575.98px) {
-            .table thead th.small-hide, .table tbody td.small-hide { display: none; }
-        }
-        @media (max-width: 767.98px) {
-            .table thead th.medium-hide, .table tbody td.medium-hide { display: none; }
-        }
+        @media (max-width: 575.98px) { .table thead th.small-hide, .table tbody td.small-hide { display: none; } }
+        @media (max-width: 767.98px) { .table thead th.medium-hide, .table tbody td.medium-hide { display: none; } }
     </style>
 </head>
 
@@ -85,9 +73,7 @@
         New writeups are coming soon! Stay tuned.
     </div>
 
-    <button class="dark-mode-btn" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">
-        🌙 / ☀️
-    </button>
+    <button class="dark-mode-btn" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">🌙 / ☀️</button>
 
     <div class="container mt-4">
         <div class="controls">
@@ -98,7 +84,7 @@
             </div>
             <!-- Search Bar -->
             <div class="mb-2">
-                <input type="text" id="searchInput" class="form-control form-control" placeholder="Search writeups..." oninput="filterWriteups()" aria-label="Search writeups" />
+                <input type="text" id="searchInput" class="form-control" placeholder="Search writeups..." oninput="filterWriteups()" aria-label="Search writeups" />
             </div>
             <!-- Filters Section -->
             <div class="filter-section">
@@ -123,9 +109,19 @@
                     </select>
                 </div>
             </div>
-            <!-- Clear Filters Button -->
-            <div class="mb-3 d-grid d-sm-flex gap-2">
-                <button class="btn btn-warning" onclick="clearFilters()">Clear Filters</button>
+
+            <!-- Sort Controls -->
+            <div class="mb-3 d-grid d-sm-flex align-items-center gap-2">
+                <label for="sortSelect" class="form-label m-0">Sort by:</label>
+                <select id="sortSelect" class="form-select" style="max-width: 260px;" onchange="sortWriteups()" aria-label="Sort writeups">
+                    <option value="none">— None —</option>
+                    <option value="date-desc">Latest → Oldest</option>
+                    <option value="date-asc">Oldest → Latest</option>
+                    <option value="difficulty-asc">Difficulty: Lowest → Highest</option>
+                    <option value="difficulty-desc">Difficulty: Highest → Lowest</option>
+                </select>
+                <button class="btn btn-outline-secondary" onclick="resetSort()">Reset sort</button>
+                <button class="btn btn-warning ms-auto" onclick="clearFilters()">Clear Filters</button>
             </div>
         </div>
 
@@ -199,40 +195,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Global variables to track unique filter options and their counts
-        let filterData = {
-            platform: {},
-            category: {},
-            difficulty: {},
-            language: {},
-            os: {},
-            status: {}
-        };
+        let filterData = { platform: {}, category: {}, difficulty: {}, language: {}, os: {}, status: {} };
 
-        // Function to toggle Dark Mode
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
-            // Persist preference for the session
             const isDark = document.body.classList.contains('dark-mode');
             try { localStorage.setItem('writeupz-dark', isDark ? '1' : '0'); } catch (_) {}
         }
 
         // Restore dark mode preference
         (function restoreDark() {
-            try {
-                const saved = localStorage.getItem('writeupz-dark');
-                if (saved === '1') document.body.classList.add('dark-mode');
-            } catch (_) {}
+            try { if (localStorage.getItem('writeupz-dark') === '1') document.body.classList.add('dark-mode'); } catch (_) {}
         })();
 
         // Update filters with unique values dynamically
         function updateFilters() {
             const rows = document.querySelectorAll('#writeupTableBody tr');
-
-            // Reset filter data
             filterData = { platform: {}, category: {}, difficulty: {}, language: {}, os: {}, status: {} };
-
-            // Collect unique values and counts for each filter
             rows.forEach(row => {
                 const platform = row.getAttribute('data-platform');
                 const category = row.getAttribute('data-category');
@@ -240,7 +219,6 @@
                 const language = row.getAttribute('data-language');
                 const os = row.getAttribute('data-os');
                 const status = row.getAttribute('data-status');
-
                 filterData.platform[platform] = (filterData.platform[platform] || 0) + 1;
                 filterData.category[category] = (filterData.category[category] || 0) + 1;
                 filterData.difficulty[difficulty] = (filterData.difficulty[difficulty] || 0) + 1;
@@ -248,8 +226,6 @@
                 filterData.os[os] = (filterData.os[os] || 0) + 1;
                 filterData.status[status] = (filterData.status[status] || 0) + 1;
             });
-
-            // Update the filters with dynamic values and counts
             updateFilterOptions('platformFilter', filterData.platform);
             updateFilterOptions('categoryFilter', filterData.category);
             updateFilterOptions('difficultyFilter', filterData.difficulty);
@@ -258,14 +234,12 @@
             updateFilterOptions('statusFilter', filterData.status);
         }
 
-        // Update each filter with unique options and counters
         function updateFilterOptions(filterId, items) {
             const filter = document.getElementById(filterId);
             const placeholder = filter.querySelector('option');
             const placeholderClone = placeholder.cloneNode(true);
-            filter.innerHTML = '';  // Clear current options
-            filter.appendChild(placeholderClone);  // Re-add the placeholder text
-
+            filter.innerHTML = '';
+            filter.appendChild(placeholderClone);
             for (const [key, value] of Object.entries(items)) {
                 const option = document.createElement('option');
                 option.value = key;
@@ -274,7 +248,54 @@
             }
         }
 
-        // Function to filter the table
+        function getDateValue(row) {
+            const iso = row.getAttribute('data-date-completed');
+            return iso ? new Date(iso).getTime() : 0;
+        }
+        const difficultyRank = { 'very easy': 1, 'easy': 2, 'medium': 3, 'hard': 4, 'insane': 5 };
+        function getDifficultyValue(row) {
+            const d = (row.getAttribute('data-difficulty') || '').toLowerCase();
+            return difficultyRank[d] ?? 999; // unknown difficulties go to the end
+        }
+
+        function sortWriteups() {
+            const criterion = document.getElementById('sortSelect').value;
+            const tbody = document.getElementById('writeupTableBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            if (criterion === 'none') return; // do nothing
+
+            rows.sort((a, b) => {
+                switch (criterion) {
+                    case 'date-asc':
+                        return getDateValue(a) - getDateValue(b);
+                    case 'date-desc':
+                        return getDateValue(b) - getDateValue(a);
+                    case 'difficulty-asc':
+                        return getDifficultyValue(a) - getDifficultyValue(b);
+                    case 'difficulty-desc':
+                        return getDifficultyValue(b) - getDifficultyValue(a);
+                }
+                return 0;
+            });
+
+            rows.forEach(r => tbody.appendChild(r));
+            filterWriteups();
+            try { localStorage.setItem('writeupz-sort', criterion); } catch (_) {}
+        }
+
+        function resetSort() {
+            document.getElementById('sortSelect').value = 'none';
+            try { localStorage.removeItem('writeupz-sort'); } catch (_) {}
+            // Re-append rows by original index (using number column as a hint)
+            const tbody = document.getElementById('writeupTableBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a,b) => parseInt(a.firstElementChild.textContent,10) - parseInt(b.firstElementChild.textContent,10));
+            rows.forEach(r => tbody.appendChild(r));
+            filterWriteups();
+        }
+
+        // Filter the table
         function filterWriteups() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
             const platformFilter = document.getElementById('platformFilter').value.toLowerCase();
@@ -285,7 +306,6 @@
             const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
 
             const rows = document.querySelectorAll('#writeupTableBody tr');
-
             rows.forEach(row => {
                 const name = row.querySelector('td:nth-child(2) a').textContent.toLowerCase();
                 const platform = row.getAttribute('data-platform').toLowerCase();
@@ -303,15 +323,10 @@
                 const matchesOs = os.includes(osFilter);
                 const matchesStatus = status.includes(statusFilter);
 
-                if (matchesSearch && matchesPlatform && matchesCategory && matchesDifficulty && matchesLanguage && matchesOs && matchesStatus) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                row.style.display = (matchesSearch && matchesPlatform && matchesCategory && matchesDifficulty && matchesLanguage && matchesOs && matchesStatus) ? '' : 'none';
             });
         }
 
-        // Clear all filters
         function clearFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('platformFilter').value = '';
@@ -327,6 +342,17 @@
         window.addEventListener('load', function () {
             updateFilters();
             filterWriteups();
+            // Restore sort choice
+            try {
+                const savedSort = localStorage.getItem('writeupz-sort');
+                if (savedSort) {
+                    const sel = document.getElementById('sortSelect');
+                    if (Array.from(sel.options).some(o => o.value === savedSort)) {
+                        sel.value = savedSort;
+                        sortWriteups();
+                    }
+                }
+            } catch (_) {}
         });
     </script>
 </body>
