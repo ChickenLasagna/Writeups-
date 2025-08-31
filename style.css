@@ -1,0 +1,97 @@
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+  --bg-2: #f8f9fa;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode theme vars */
+body.dark-mode {
+  --bg: #121212;
+  --fg: #ffffff;
+  --bg-2: #1e1e1e;
+}
+
+/* Table styling for dark mode */
+body.dark-mode .writeup-table,
+body.dark-mode .writeup-table th,
+body.dark-mode .writeup-table td {
+  background-color: #2c2c2c;
+  color: #ffffff;
+}
+body.dark-mode .writeup-table th { background-color: #333; }
+body.dark-mode .writeup-table td { background-color: #444; }
+body.dark-mode .writeup-table tbody tr:hover { background-color: #555; }
+
+/* Light mode hover */
+.writeup-table th,
+.writeup-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+.writeup-table tbody tr:hover { background-color: #f1f1f1; }
+
+.writeup-table .btn-view { width: 100%; }
+.writeup-link { text-decoration: none; color: inherit; }
+.resources { margin-top: 10px; }
+.alert-info { margin-top: 16px; }
+
+/* Dark mode specific buttons/links */
+body.dark-mode .btn-view { background-color: #444; color: #fff; }
+body.dark-mode .btn-view:hover { background-color: #555; }
+body.dark-mode .writeup-link { color: #fff; }
+body.dark-mode .writeup-link:hover { color: #b0b0b0; }
+
+/* Controls */
+.controls {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: var(--bg);
+  padding: 8px 0;
+}
+
+/* Dark Mode Button - Top Right */
+.dark-mode-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  z-index: 1040;
+}
+.dark-mode-btn:hover { background-color: #444; }
+
+/* Filters layout */
+.filter-section { margin-bottom: 12px; }
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (min-width: 576px) { .filters-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 768px) { .filters-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+/* Hide some columns on smaller screens */
+@media (max-width: 575.98px) {
+  .table thead th.small-hide,
+  .table tbody td.small-hide {
+    display: none;
+  }
+}
+@media (max-width: 767.98px) {
+  .table thead th.medium-hide,
+  .table tbody td.medium-hide {
+    display: none;
+  }
+}
