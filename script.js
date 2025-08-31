@@ -1,5 +1,16 @@
 let filterData = { platform: {}, category: {}, difficulty: {}, language: {}, os: {}, status: {} };
 
+/* NEW: Ensure all columns are visible on mobile by removing responsive hide classes */
+function unhideResponsiveColumns() {
+  const cells = document.querySelectorAll(
+    '.writeup-table thead th.small-hide, .writeup-table thead th.medium-hide, ' +
+    '.writeup-table tbody td.small-hide, .writeup-table tbody td.medium-hide'
+  );
+  cells.forEach(el => {
+    el.classList.remove('small-hide', 'medium-hide');
+  });
+}
+
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
   const isDark = document.body.classList.contains('dark-mode');
@@ -148,6 +159,7 @@ function clearFilters() {
 
 // Initialize on page load
 window.addEventListener('load', function () {
+  unhideResponsiveColumns();           // <-- NEW: make all columns visible on mobile
   updateFilters();
   filterWriteups();
   // Restore sort choice
